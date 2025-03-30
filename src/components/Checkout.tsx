@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
@@ -8,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
 import { api } from '@/services/api';
 import { CreditCard, Check, ArrowLeft, Loader2 } from 'lucide-react';
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const Checkout: React.FC = () => {
   const { items, totalPrice, clearCart } = useCart();

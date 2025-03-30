@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -7,7 +6,7 @@ import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { useCart, Product } from '@/context/CartContext';
 import { ArrowLeft } from 'lucide-react';
-import { useToast } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Scan = () => {
   const [scannedProduct, setScannedProduct] = useState<Product | null>(null);
