@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/lib/utils';
 import { api } from '@/services/api';
-import { CreditCard, Check, ArrowLeft, Loader2, Bank } from 'lucide-react';
+import { CreditCard, Check, ArrowLeft, Loader2, Building } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -166,7 +166,7 @@ export const Checkout: React.FC = () => {
               Card
             </TabsTrigger>
             <TabsTrigger value="bank_transfer" className="flex items-center gap-2">
-              <Bank className="h-4 w-4" />
+              <Building className="h-4 w-4" />
               Bank Transfer
             </TabsTrigger>
           </TabsList>
