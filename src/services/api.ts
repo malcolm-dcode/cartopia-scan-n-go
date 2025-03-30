@@ -122,8 +122,15 @@ export const api = {
       throw new Error('Cart is empty');
     }
     
-    if (!paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
-      throw new Error('Invalid payment details');
+    // Validate payment details based on payment method
+    if (paymentDetails.method === 'card') {
+      if (!paymentDetails.cardNumber || !paymentDetails.expiryDate || !paymentDetails.cvv) {
+        throw new Error('Invalid card payment details');
+      }
+    } else if (paymentDetails.method === 'bank_transfer') {
+      if (!paymentDetails.reference) {
+        throw new Error('Invalid bank transfer reference');
+      }
     }
     
     // In a real app, this would connect to a payment gateway
