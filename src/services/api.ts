@@ -1,4 +1,3 @@
-
 // Mock product database
 const productDatabase: Record<string, any> = {
   // Snacks
@@ -96,6 +95,44 @@ const productDatabase: Record<string, any> = {
   }
 };
 
+// Mock orders database
+const orderDatabase: Record<string, any[]> = {
+  '1': [
+    {
+      id: 'ORD-123456',
+      date: '2023-06-15',
+      items: [
+        { name: 'Potato Chips', quantity: 2, price: 150.00 },
+        { name: 'Coca Cola', quantity: 1, price: 120.00 }
+      ],
+      total: 420.00,
+      status: 'Completed'
+    },
+    {
+      id: 'ORD-123457',
+      date: '2023-06-10',
+      items: [
+        { name: 'Bread Loaf', quantity: 1, price: 250.00 },
+        { name: 'Milk Carton', quantity: 2, price: 320.00 }
+      ],
+      total: 890.00,
+      status: 'Completed'
+    }
+  ],
+  '2': [
+    {
+      id: 'ORD-789012',
+      date: '2023-07-05',
+      items: [
+        { name: 'USB Cable', quantity: 1, price: 1200.00 },
+        { name: 'Chocolate Bar', quantity: 3, price: 250.00 }
+      ],
+      total: 1950.00,
+      status: 'Completed'
+    }
+  ]
+};
+
 // Simulate API call delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -133,10 +170,13 @@ export const api = {
       }
     }
     
-    // In a real app, this would connect to a payment gateway
+    // Generate a new order ID
+    const orderId = `ORD-${Math.floor(Math.random() * 1000000)}`;
+    
+    // In a real app, this would connect to a payment gateway and save the order
     return {
       success: true,
-      orderId: `ORD-${Math.floor(Math.random() * 1000000)}`,
+      orderId: orderId,
       timestamp: new Date().toISOString()
     };
   },
@@ -145,29 +185,8 @@ export const api = {
   getUserOrders: async (userId: string) => {
     await delay(1000);
     
-    // Mock order history
-    return [
-      {
-        id: 'ORD-123456',
-        date: '2023-06-15',
-        items: [
-          { name: 'Potato Chips', quantity: 2, price: 150.00 },
-          { name: 'Coca Cola', quantity: 1, price: 120.00 }
-        ],
-        total: 420.00,
-        status: 'Completed'
-      },
-      {
-        id: 'ORD-123457',
-        date: '2023-06-10',
-        items: [
-          { name: 'Bread Loaf', quantity: 1, price: 250.00 },
-          { name: 'Milk Carton', quantity: 2, price: 320.00 }
-        ],
-        total: 890.00,
-        status: 'Completed'
-      }
-    ];
+    // Return orders from our mock database or empty array if none
+    return orderDatabase[userId] || [];
   },
   
   // Simulate connecting to store inventory system

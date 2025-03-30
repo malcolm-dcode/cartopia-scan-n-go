@@ -15,10 +15,14 @@ const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   
+  // Fix the query to properly fetch orders
   const { data: orders, isLoading } = useQuery({
     queryKey: ['orders', user?.id],
-    queryFn: () => api.getUserOrders(user?.id || ''),
-    enabled: !!user,
+    queryFn: async () => {
+      if (!user?.id) return [];
+      return api.getUserOrders(user.id);
+    },
+    enabled: !!user?.id,
   });
   
   const handleLogout = () => {
@@ -90,7 +94,7 @@ const Profile = () => {
             <div className="text-center py-8">Loading orders...</div>
           ) : orders && orders.length > 0 ? (
             <div className="space-y-4">
-              {orders.map((order: any) => (
+              {orders.map((order) => (
                 <Card key={order.id}>
                   <CardContent className="p-6">
                     <div className="flex justify-between items-center mb-4">
@@ -110,7 +114,7 @@ const Profile = () => {
                     </div>
                     
                     <div className="space-y-2 mb-4">
-                      {order.items.map((item: any, index: number) => (
+                      {order.items.map((item, index) => (
                         <div key={index} className="flex justify-between text-sm">
                           <span>{item.name} x{item.quantity}</span>
                           <span>₦{formatCurrency(item.price * item.quantity)}</span>
