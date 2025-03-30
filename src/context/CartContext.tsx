@@ -1,6 +1,5 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useAuth } from './AuthContext';
 
 // Types
@@ -11,6 +10,7 @@ export interface Product {
   barcode: string;
   imageUrl: string;
   description?: string;
+  uniqueId?: string; // Added to track individual scan instances
 }
 
 export interface CartItem {
@@ -63,8 +63,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const addItem = (product: Product) => {
     setItems(currentItems => {
-      // Check if item already exists
-      const existingItemIndex = currentItems.findIndex(item => item.product.id === product.id);
+      // If the product has a uniqueId, treat it as a new item
+      // Otherwise, check if the item with the same product ID exists
+      const identifier = product.uniqueId || product.id;
+      const existingItemIndex = currentItems.findIndex(
+        item => (item.product.uniqueId && item.product.uniqueId === identifier) || 
+              (!item.product.uniqueId && !product.uniqueId && item.product.id === product.id)
+      );
       
       if (existingItemIndex > -1) {
         // Increment quantity if item exists
@@ -75,7 +80,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
         return updatedItems;
       } else {
-        // Add new item if it doesn't exist
+        // Add new item
         return [...currentItems, { product, quantity: 1 }];
       }
     });
@@ -93,19 +98,25 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     setItems(currentItems => 
-      currentItems.map(item => 
-        item.product.id === productId 
-          ? { ...item, quantity } 
-          : item
-      )
+      currentItems.map(item => {
+        // Check both uniqueId and id for matching
+        const itemId = item.product.uniqueId || item.product.id;
+        return itemId === productId ? { ...item, quantity } : item;
+      })
     );
   };
   
   const removeItem = (productId: string) => {
-    const itemToRemove = items.find(item => item.product.id === productId);
+    const itemToRemove = items.find(item => {
+      const itemId = item.product.uniqueId || item.product.id;
+      return itemId === productId;
+    });
     
     setItems(currentItems => 
-      currentItems.filter(item => item.product.id !== productId)
+      currentItems.filter(item => {
+        const itemId = item.product.uniqueId || item.product.id;
+        return itemId !== productId;
+      })
     );
     
     if (itemToRemove) {

@@ -16,7 +16,12 @@ const Scan = () => {
   const { toast } = useToast();
   
   const handleScan = (product: Product) => {
-    setScannedProduct(product);
+    setScannedProduct({
+      ...product,
+      // Generate a unique identifier for this scan instance
+      uniqueId: `${product.id}_${Date.now()}`
+    });
+    
     toast({
       title: "Product Found",
       description: `${product.name} has been scanned successfully.`,

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useCart, CartItem } from '@/context/CartContext';
 import { ProductCard } from './ProductCard';
@@ -56,16 +57,21 @@ export const Cart: React.FC = () => {
       </div>
       
       <div className="grid gap-4 mb-8">
-        {items.map((item: CartItem) => (
-          <ProductCard 
-            key={item.product.id}
-            product={item.product}
-            inCart={true}
-            quantity={item.quantity}
-            onIncreaseQuantity={() => updateQuantity(item.product.id, item.quantity + 1)}
-            onDecreaseQuantity={() => updateQuantity(item.product.id, item.quantity - 1)}
-          />
-        ))}
+        {items.map((item: CartItem) => {
+          // Use uniqueId as the key if available, otherwise fall back to regular id
+          const itemId = item.product.uniqueId || item.product.id;
+          
+          return (
+            <ProductCard 
+              key={itemId}
+              product={item.product}
+              inCart={true}
+              quantity={item.quantity}
+              onIncreaseQuantity={() => updateQuantity(itemId, item.quantity + 1)}
+              onDecreaseQuantity={() => updateQuantity(itemId, item.quantity - 1)}
+            />
+          );
+        })}
       </div>
       
       <div className="bg-white p-4 rounded-lg shadow-sm border mb-4">

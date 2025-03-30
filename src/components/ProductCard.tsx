@@ -24,6 +24,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onIncreaseQuantity,
   onDecreaseQuantity
 }) => {
+  // Use uniqueId as a key if available, otherwise fall back to regular id
+  const productId = product.uniqueId || product.id;
+  
   return (
     <Card className="overflow-hidden shadow-md">
       <div className="relative">
