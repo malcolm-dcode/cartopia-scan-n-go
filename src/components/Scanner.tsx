@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Camera, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { api } from '@/services/api';
 import { Product } from '@/context/CartContext';
@@ -95,17 +95,22 @@ export const Scanner: React.FC<ScannerProps> = ({ onScan, onError }) => {
   return (
     <div className="flex flex-col items-center w-full">
       {scanning ? (
-        <div className="relative w-full aspect-square max-w-md rounded-lg overflow-hidden border-2 border-brand">
+        <div className="relative w-full aspect-square max-w-md rounded-lg overflow-hidden border-2 border-brand shadow-lg">
           <video
             ref={videoRef}
             className="w-full h-full object-cover"
             playsInline
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-64 h-64 border-2 border-white rounded-lg"></div>
+            <div className="w-64 h-64 border-2 border-white rounded-lg">
+              <div className="absolute inset-0 border-t-2 border-l-2 w-8 h-8 border-white -top-1 -left-1"></div>
+              <div className="absolute inset-0 border-t-2 border-r-2 w-8 h-8 border-white -top-1 -right-1"></div>
+              <div className="absolute inset-0 border-b-2 border-l-2 w-8 h-8 border-white -bottom-1 -left-1"></div>
+              <div className="absolute inset-0 border-b-2 border-r-2 w-8 h-8 border-white -bottom-1 -right-1"></div>
+            </div>
           </div>
           <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-            <Button onClick={stopScanning} variant="destructive">
+            <Button onClick={stopScanning} variant="destructive" className="shadow-lg">
               Cancel
             </Button>
           </div>
@@ -121,12 +126,13 @@ export const Scanner: React.FC<ScannerProps> = ({ onScan, onError }) => {
         <div className="flex flex-col items-center w-full max-w-md space-y-6">
           <Button 
             onClick={startScanning} 
-            className="w-full py-8 text-xl bg-brand hover:bg-brand-dark"
+            className="w-full py-8 text-xl bg-brand hover:bg-brand-dark flex items-center justify-center gap-2 shadow-md"
           >
+            <Camera className="h-6 w-6 mr-2" />
             Tap to Scan Barcode
           </Button>
           
-          <div className="w-full mt-8 p-4 border rounded-lg">
+          <div className="w-full mt-8 p-4 border rounded-lg shadow-sm">
             <h3 className="text-sm font-medium mb-2">Test Mode</h3>
             <form onSubmit={handleTestSubmit} className="flex space-x-2">
               <input 

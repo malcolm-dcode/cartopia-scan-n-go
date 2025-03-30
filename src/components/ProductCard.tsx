@@ -2,8 +2,9 @@
 import React from 'react';
 import { Product } from '@/context/CartContext';
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Plus, Minus } from "lucide-react";
+import { ShoppingCart, Plus, Minus, ImageOff } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { formatCurrency } from '@/lib/utils';
 
 interface ProductCardProps {
@@ -24,17 +25,32 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onDecreaseQuantity
 }) => {
   return (
-    <Card className="overflow-hidden">
-      <div className="aspect-square w-full bg-gray-100 relative overflow-hidden">
-        <img 
-          src={product.imageUrl || '/placeholder.svg'} 
-          alt={product.name}
-          className="object-cover w-full h-full transition-transform hover:scale-105"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement;
-            target.src = '/placeholder.svg';
-          }}
-        />
+    <Card className="overflow-hidden shadow-md">
+      <div className="relative">
+        <AspectRatio ratio={1 / 1}>
+          {product.imageUrl ? (
+            <img 
+              src={product.imageUrl} 
+              alt={product.name}
+              className="object-cover w-full h-full transition-transform hover:scale-105"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder.svg';
+              }}
+            />
+          ) : (
+            <div className="flex items-center justify-center w-full h-full bg-gray-100">
+              <ImageOff className="w-12 h-12 text-gray-400" />
+            </div>
+          )}
+        </AspectRatio>
+        {product.barcode && (
+          <div className="absolute top-2 right-2">
+            <span className="bg-black/60 text-white text-xs px-2 py-1 rounded-md">
+              {product.barcode}
+            </span>
+          </div>
+        )}
       </div>
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-2">

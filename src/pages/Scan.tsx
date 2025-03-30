@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -5,7 +6,7 @@ import Scanner from '@/components/Scanner';
 import ProductCard from '@/components/ProductCard';
 import { Button } from '@/components/ui/button';
 import { useCart, Product } from '@/context/CartContext';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShoppingCart } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
 const Scan = () => {
@@ -16,6 +17,10 @@ const Scan = () => {
   
   const handleScan = (product: Product) => {
     setScannedProduct(product);
+    toast({
+      title: "Product Found",
+      description: `${product.name} has been scanned successfully.`,
+    });
   };
   
   const handleError = (message: string) => {
@@ -53,11 +58,17 @@ const Scan = () => {
           Back
         </Button>
         <h1 className="text-xl font-bold">Scan Products</h1>
-        <div className="w-10"></div> {/* Empty div for alignment */}
+        <Button 
+          variant="ghost"
+          onClick={() => navigate('/cart')}
+          className="p-1"
+        >
+          <ShoppingCart className="h-5 w-5" />
+        </Button>
       </div>
       
       {scannedProduct ? (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-slide-up">
           <div className="max-w-sm mx-auto">
             <ProductCard 
               product={scannedProduct} 
