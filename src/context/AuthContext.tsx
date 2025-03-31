@@ -1,8 +1,9 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser, Session } from '@supabase/supabase-js';
+import { TableRow } from "@/types/database";
 
 // Types
 export interface User {
@@ -84,10 +85,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data) {
+        const profile = data as TableRow<'profiles'>;
         setUser({
-          id: data.id,
-          name: data.name,
-          email: data.email
+          id: profile.id,
+          name: profile.name,
+          email: profile.email
         });
       }
     } catch (error) {

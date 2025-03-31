@@ -1,10 +1,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import { TableRow } from "@/types/database";
 
 // API methods
 export const api = {
   // Search for product by barcode
-  getProductByBarcode: async (barcode: string) => {
+  getProductByBarcode: async (barcode: string): Promise<TableRow<'products'>> => {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -16,7 +17,7 @@ export const api = {
         throw new Error('Product not found');
       }
       
-      return data;
+      return data as TableRow<'products'>;
     } catch (error) {
       throw new Error('Product not found');
     }
@@ -58,11 +59,11 @@ export const api = {
           order_number: `ORD-${Math.floor(Math.random() * 1000000)}`,
           total: total,
           status: 'Completed'
-        })
+        } as any)
         .select()
         .single();
       
-      if (orderError) {
+      if (orderError || !orderData) {
         throw new Error('Error creating order');
       }
       
@@ -77,7 +78,7 @@ export const api = {
       
       const { error: itemsError } = await supabase
         .from('order_items')
-        .insert(orderItems);
+        .insert(orderItems as any);
       
       if (itemsError) {
         throw new Error('Error creating order items');
@@ -103,12 +104,12 @@ export const api = {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
       
-      if (ordersError) {
+      if (ordersError || !orders) {
         throw new Error('Error fetching orders');
       }
       
       // For each order, get its items
-      const ordersWithItems = await Promise.all(orders.map(async (order) => {
+      const ordersWithItems = await Promise.all((orders as TableRow<'orders'>[]).map(async (order) => {
         const { data: items, error: itemsError } = await supabase
           .from('order_items')
           .select('*')
@@ -121,10 +122,10 @@ export const api = {
         return {
           id: order.order_number,
           date: new Date(order.created_at).toISOString().split('T')[0],
-          items: items.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
+          items: (items || []).map(item => ({
+            name: (item as TableRow<'order_items'>).name,
+            quantity: (item as TableRow<'order_items'>).quantity,
+            price: (item as TableRow<'order_items'>).price
           })),
           total: order.total,
           status: order.status
