@@ -61,7 +61,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [items, user]);
   
+  // Function to add an item to the cart
   const addItem = (product: Product) => {
+    // Add item logic
     setItems(currentItems => {
       // If the product has a uniqueId, treat it as a new item
       // Otherwise, check if the item with the same product ID exists
@@ -91,7 +93,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   };
   
+  // Function to update an item's quantity
   const updateQuantity = (productId: string, quantity: number) => {
+    // Update quantity logic
     if (quantity < 1) {
       removeItem(productId);
       return;
@@ -106,7 +110,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
   };
   
+  // Function to remove an item from the cart
   const removeItem = (productId: string) => {
+    // Remove item logic
     const itemToRemove = items.find(item => {
       const itemId = item.product.uniqueId || item.product.id;
       return itemId === productId;
@@ -127,6 +133,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
   
+  // Function to clear the cart
   const clearCart = () => {
     setItems([]);
     toast({

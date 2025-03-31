@@ -15,7 +15,6 @@ const Profile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   
-  // Fix the query to properly fetch orders
   const { data: orders, isLoading } = useQuery({
     queryKey: ['orders', user?.id],
     queryFn: async () => {
@@ -66,11 +65,6 @@ const Profile = () => {
               <div className="flex justify-between pb-2 border-b">
                 <span className="text-gray-600">Status</span>
                 <Badge className="bg-green-600">Active</Badge>
-              </div>
-              
-              <div className="flex justify-between pb-2 border-b">
-                <span className="text-gray-600">Payment Methods</span>
-                <span>Mastercard •••• 1234</span>
               </div>
               
               <div className="flex justify-between pt-2">
