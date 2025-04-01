@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -44,7 +43,7 @@ const StoreManage = () => {
         toast({
           title: "Sync Partially Completed",
           description: `Some items could not be synchronized. Check the logs for details.`,
-          variant: "warning"
+          variant: "destructive"
         });
       }
       
@@ -103,7 +102,7 @@ const StoreManage = () => {
         toast({
           title: "Price Discrepancies Found",
           description: `Found ${results.discrepanciesFound} price differences between app and store`,
-          variant: "warning"
+          variant: "destructive"
         });
         
         // In a real app, you'd show the detailed list of discrepancies
@@ -121,6 +120,16 @@ const StoreManage = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [visibleApiKey, setVisibleApiKey] = useState<string | null>(null);
+
+  const toggleApiKeyVisibility = (connectionId: string, apiKey: string) => {
+    if (visibleApiKey === connectionId) {
+      setVisibleApiKey(null);
+    } else {
+      setVisibleApiKey(connectionId);
     }
   };
 
@@ -174,6 +183,28 @@ const StoreManage = () => {
                   <span>Auto-sync enabled (every {connection.sync_interval_minutes} minutes)</span>
                 </div>
               )}
+
+              <div className="flex items-center text-sm mt-2">
+                <span className="font-medium mr-2">API Endpoint:</span>
+                <code className="bg-gray-100 p-1 rounded text-xs">{connection.apiEndpoint}</code>
+              </div>
+
+              <div className="flex items-center text-sm mt-2">
+                <span className="font-medium mr-2">API Key:</span>
+                {visibleApiKey === connection.id ? (
+                  <code className="bg-gray-100 p-1 rounded text-xs">{connection.apiKey}</code>
+                ) : (
+                  <code className="bg-gray-100 p-1 rounded text-xs">••••••••••••••••</code>
+                )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 ml-2 text-xs" 
+                  onClick={() => toggleApiKeyVisibility(connection.id, connection.apiKey)}
+                >
+                  {visibleApiKey === connection.id ? "Hide" : "Show"}
+                </Button>
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between flex-wrap gap-2 pt-4">

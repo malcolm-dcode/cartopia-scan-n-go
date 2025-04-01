@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -26,6 +25,9 @@ const StoreIntegration = () => {
   const [storeId, setStoreId] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [apiEndpoint, setApiEndpoint] = useState("");
+
+  // API Key visibility state
+  const [visibleApiKey, setVisibleApiKey] = useState<string | null>(null);
   
   // Fetch existing connections
   useEffect(() => {
@@ -111,7 +113,7 @@ const StoreIntegration = () => {
         toast({
           title: "Sync Partially Completed",
           description: `Some items could not be synchronized. Check the logs for details.`,
-          variant: "warning"
+          variant: "destructive"
         });
       }
       
@@ -170,7 +172,7 @@ const StoreIntegration = () => {
         toast({
           title: "Price Discrepancies Found",
           description: `Found ${results.discrepanciesFound} price differences between app and store`,
-          variant: "warning"
+          variant: "destructive"
         });
         
         // In a real app, you'd show the detailed list of discrepancies
@@ -188,6 +190,15 @@ const StoreIntegration = () => {
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Toggle API key visibility
+  const toggleApiKeyVisibility = (connectionId: string) => {
+    if (visibleApiKey === connectionId) {
+      setVisibleApiKey(null);
+    } else {
+      setVisibleApiKey(connectionId);
     }
   };
   
@@ -309,6 +320,28 @@ const StoreIntegration = () => {
                           ) : (
                             <span>Not synced yet</span>
                           )}
+                        </div>
+                        
+                        <div className="flex items-center text-sm mt-2">
+                          <span className="font-medium mr-2">API Endpoint:</span>
+                          <code className="bg-gray-100 p-1 rounded text-xs">{connection.apiEndpoint}</code>
+                        </div>
+
+                        <div className="flex items-center text-sm mt-2">
+                          <span className="font-medium mr-2">API Key:</span>
+                          {visibleApiKey === connection.id ? (
+                            <code className="bg-gray-100 p-1 rounded text-xs">{connection.apiKey}</code>
+                          ) : (
+                            <code className="bg-gray-100 p-1 rounded text-xs">••••••••••••••••</code>
+                          )}
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-6 ml-2 text-xs" 
+                            onClick={() => toggleApiKeyVisibility(connection.id)}
+                          >
+                            {visibleApiKey === connection.id ? "Hide" : "Show"}
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
