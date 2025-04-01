@@ -5,7 +5,7 @@ import Layout from '@/components/Layout';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ArrowLeft, Database, NetworkIcon, RefreshCw, Settings2 } from "lucide-react";
+import { ArrowLeft, Database, Network, RefreshCw, Settings2 } from "lucide-react";
 import StoreConnect from "@/components/store-hub/StoreConnect";
 import StoreManage from "@/components/store-hub/StoreManage";
 import StoreAnalytics from "@/components/store-hub/StoreAnalytics";
@@ -44,7 +44,7 @@ const StoreHub = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-3 mb-6">
             <TabsTrigger value="connect" className="flex items-center">
-              <NetworkIcon className="h-4 w-4 mr-2" />
+              <Network className="h-4 w-4 mr-2" />
               Connect
             </TabsTrigger>
             <TabsTrigger value="manage" className="flex items-center">

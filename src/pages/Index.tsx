@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ScanBarcode, ShoppingCart, CreditCard, Truck, Database, BuildingStore } from "lucide-react";
+import { ScanBarcode, ShoppingCart, CreditCard, Truck, Database, Store } from "lucide-react";
 import Layout from '@/components/Layout';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -81,7 +81,7 @@ const Index = () => {
               variant="outline"
               className="py-6 text-lg border-2 border-dashed border-blue-400/50"
             >
-              <BuildingStore className="mr-3 h-5 w-5 text-blue-500" />
+              <Store className="mr-3 h-5 w-5 text-blue-500" />
               Store Hub (New)
             </Button>
           </div>
