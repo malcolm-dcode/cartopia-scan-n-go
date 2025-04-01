@@ -81,11 +81,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log("Fetching profile for user:", userId);
+      
+      // Explicitly type the response
+      interface ProfileResponse {
+        id: string;
+        name: string;
+        email: string;
+        created_at?: string;
+        updated_at?: string;
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .single<ProfileResponse>();
       
       if (error) {
         console.error("Error fetching profile:", error);
@@ -101,11 +111,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (data) {
         console.log("Profile found:", data);
-        const profile = data as TableRow<'profiles'>;
         setUser({
-          id: profile.id,
-          name: profile.name,
-          email: profile.email
+          id: data.id,
+          name: data.name,
+          email: data.email
         });
       }
     } catch (error) {
@@ -130,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { email, user_metadata } = authData.user;
       const name = user_metadata?.name || email?.split('@')[0] || 'User';
       
-      // Create a profile
+      // Create a profile with proper typing
       const { data, error } = await supabase
         .from('profiles')
         .insert({
@@ -148,11 +157,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (data) {
         console.log("Profile created:", data);
-        const profile = data as TableRow<'profiles'>;
         setUser({
-          id: profile.id,
-          name: profile.name,
-          email: profile.email
+          id: data.id,
+          name: data.name,
+          email: data.email
         });
       }
     } catch (error) {
