@@ -2,7 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
-import { ScanBarcode, ShoppingCart, CreditCard, Truck } from "lucide-react";
+import { ScanBarcode, ShoppingCart, CreditCard, Truck, Database } from "lucide-react";
 import Layout from '@/components/Layout';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
@@ -65,6 +65,15 @@ const Index = () => {
               )}
             </Button>
           </div>
+          
+          <Button
+            onClick={() => navigate('/store-integration')}
+            variant="outline"
+            className="py-6 text-lg border-2 border-dashed border-brand/50"
+          >
+            <Database className="mr-3 h-5 w-5 text-brand" />
+            Connect to Store Inventory
+          </Button>
         </div>
         
         <div className="bg-white rounded-lg p-6 shadow-sm border">
