@@ -17,6 +17,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import Profile from "./pages/Profile";
 import Success from "./pages/Success";
 import StoreIntegration from "./pages/StoreIntegration";
+import StoreHub from "./pages/StoreHub";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -70,6 +71,7 @@ const App = () => (
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/success" element={<ProtectedRoute><Success /></ProtectedRoute>} />
               <Route path="/store-integration" element={<ProtectedRoute><StoreIntegration /></ProtectedRoute>} />
+              <Route path="/store-hub" element={<ProtectedRoute><StoreHub /></ProtectedRoute>} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

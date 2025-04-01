@@ -138,6 +138,89 @@ export type Database = {
         }
         Relationships: []
       }
+      store_connections: {
+        Row: {
+          api_endpoint: string
+          api_key: string
+          auto_sync_enabled: boolean | null
+          created_at: string | null
+          id: string
+          is_active: boolean
+          last_synced: string | null
+          name: string
+          store_id: string
+          sync_interval_minutes: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          api_endpoint: string
+          api_key: string
+          auto_sync_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced?: string | null
+          name: string
+          store_id: string
+          sync_interval_minutes?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          api_endpoint?: string
+          api_key?: string
+          auto_sync_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean
+          last_synced?: string | null
+          name?: string
+          store_id?: string
+          sync_interval_minutes?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      sync_history: {
+        Row: {
+          created_at: string | null
+          error_messages: string[] | null
+          id: string
+          products_added: number
+          products_removed: number
+          products_updated: number
+          status: string
+          store_connection_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          error_messages?: string[] | null
+          id?: string
+          products_added?: number
+          products_removed?: number
+          products_updated?: number
+          status: string
+          store_connection_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          error_messages?: string[] | null
+          id?: string
+          products_added?: number
+          products_removed?: number
+          products_updated?: number
+          status?: string
+          store_connection_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sync_history_store_connection_id_fkey"
+            columns: ["store_connection_id"]
+            isOneToOne: false
+            referencedRelation: "store_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       Users: {
         Row: {
           created_at: string
