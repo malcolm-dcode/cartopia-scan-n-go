@@ -140,13 +140,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const name = user_metadata?.name || email?.split('@')[0] || 'User';
       
       // Create a profile with proper typing
+      interface ProfileInsert {
+        id: string;
+        name: string;
+        email: string;
+      }
+      
       const { data, error } = await supabase
         .from('profiles')
         .insert({
           id: userId,
           name,
           email
-        })
+        } as ProfileInsert)
         .select()
         .single();
         
