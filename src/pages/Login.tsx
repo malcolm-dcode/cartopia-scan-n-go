@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from "@/components/ui/button";
@@ -11,16 +11,46 @@ import Layout from '@/components/Layout';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/');
+    setIsSubmitting(true);
+    
+    try {
+      const success = await login(email, password);
+      if (success) {
+        // Navigate is handled by the useEffect above
+        console.log("Login successful, waiting for redirect");
+      } else {
+        setIsSubmitting(false);
+      }
+    } catch (error) {
+      console.error("Login submission error:", error);
+      setIsSubmitting(false);
     }
   };
+  
+  // Don't render the form if authentication is loading or already authenticated
+  if (isLoading || isAuthenticated) {
+    return (
+      <Layout hideNavbar className="flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Loading...</p>
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout hideNavbar className="flex items-center justify-center">
@@ -70,9 +100,9 @@ const Login = () => {
           <Button
             type="submit"
             className="w-full py-6 bg-brand hover:bg-brand-dark"
-            disabled={isLoading}
+            disabled={isSubmitting}
           >
-            {isLoading ? (
+            {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                 Signing in...

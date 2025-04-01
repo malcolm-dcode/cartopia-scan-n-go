@@ -36,13 +36,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
+        console.log("Auth state change event:", event);
         setSession(currentSession);
         
         if (currentSession?.user) {
           // Convert Supabase user to our User type
-          fetchUserProfile(currentSession.user.id);
+          // Use setTimeout to avoid potential deadlocks with Supabase's internal state
+          setTimeout(() => {
+            fetchUserProfile(currentSession.user.id);
+          }, 0);
         } else {
           setUser(null);
+          setIsLoading(false);
         }
       }
     );
@@ -56,10 +61,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (currentSession?.user) {
           // Fetch user profile
           fetchUserProfile(currentSession.user.id);
+        } else {
+          setIsLoading(false);
         }
       } catch (error) {
         console.error("Error initializing auth:", error);
-      } finally {
         setIsLoading(false);
       }
     };
@@ -74,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log("Fetching profile for user:", userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -81,10 +88,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
       
       if (error) {
+        console.error("Error fetching profile:", error);
+        
+        // If no profile exists yet, let's create one using the auth user data
+        if (error.code === 'PGRST116') {
+          await createDefaultProfile(userId);
+          return;
+        }
+        
         throw error;
       }
       
       if (data) {
+        console.log("Profile found:", data);
         const profile = data as TableRow<'profiles'>;
         setUser({
           id: profile.id,
@@ -93,7 +109,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     } catch (error) {
-      console.error("Error fetching user profile:", error);
+      console.error("Error in fetchUserProfile:", error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  // Fallback to create a profile if it doesn't exist
+  const createDefaultProfile = async (userId: string) => {
+    try {
+      console.log("Creating default profile for user:", userId);
+      // Get user email from the auth session
+      const { data: authData } = await supabase.auth.getUser(userId);
+      
+      if (!authData?.user) {
+        throw new Error("Cannot get user data");
+      }
+      
+      const { email, user_metadata } = authData.user;
+      const name = user_metadata?.name || email?.split('@')[0] || 'User';
+      
+      // Create a profile
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          name,
+          email
+        })
+        .select()
+        .single();
+        
+      if (error) {
+        console.error("Error creating profile:", error);
+        throw error;
+      }
+      
+      if (data) {
+        console.log("Profile created:", data);
+        const profile = data as TableRow<'profiles'>;
+        setUser({
+          id: profile.id,
+          name: profile.name,
+          email: profile.email
+        });
+      }
+    } catch (error) {
+      console.error("Error in createDefaultProfile:", error);
       setUser(null);
     } finally {
       setIsLoading(false);
@@ -103,12 +166,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      console.log("Attempting login for:", email);
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
+        console.error("Login error:", error);
         toast({
           title: "Login failed",
           description: error.message,
@@ -118,6 +183,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data.session) {
+        console.log("Login successful, session:", data.session.user.id);
         toast({
           title: "Login successful",
           description: "Welcome back!",
@@ -127,6 +193,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return false;
     } catch (error: any) {
+      console.error("Login exception:", error);
       toast({
         title: "Login error",
         description: error.message || "An error occurred during login",
@@ -141,6 +208,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
+      console.log("Attempting registration for:", email);
       // Register the user
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -153,6 +221,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
+        console.error("Registration error:", error);
         toast({
           title: "Registration failed",
           description: error.message,
@@ -162,6 +231,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data.user) {
+        console.log("Registration successful, user:", data.user.id);
         toast({
           title: "Registration successful",
           description: "Welcome to CartScan!",
@@ -171,6 +241,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return false;
     } catch (error: any) {
+      console.error("Registration exception:", error);
       toast({
         title: "Registration error",
         description: error.message || "An error occurred during registration",
@@ -184,6 +255,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const logout = async () => {
     try {
+      console.log("Logging out");
       await supabase.auth.signOut();
       setUser(null);
       setSession(null);
@@ -192,6 +264,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: "You have been logged out successfully",
       });
     } catch (error: any) {
+      console.error("Logout error:", error);
       toast({
         title: "Logout error",
         description: error.message || "An error occurred during logout",
